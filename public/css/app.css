@@ -1766,8 +1766,7 @@ ul, ol { margin: 0; padding: 0; list-style: none; }
 .msg-meta { display: flex; gap: 8px; flex-wrap: wrap; margin-bottom: 10px; }
 .msg-tabs { display: flex; gap: 5px; flex-wrap: wrap; margin-bottom: 12px; }
 
-.doc-reader {
-  min-height: 260px; font-size: 13px; line-height: 1.7; color: var(--ink-700); }
+.doc-reader { font-size: 13px; line-height: 1.7; color: var(--ink-700); }
 .doc-reader p { margin-bottom: 12px; }
 .doc-reader h4 { margin: 16px 0 6px; }
 .doc-body { white-space: pre-line; }
