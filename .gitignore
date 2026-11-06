@@ -1,0 +1,7 @@
+node_modules/
+data/*.json
+data/*.tmp
+*.log
+.DS_Store
+.env
+tools/qa/out/
