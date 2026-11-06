@@ -7,7 +7,8 @@ rendus de sortie de secours (CRSS), messages ANTARES, aptitudes et administratio
 
 L'interface reprend les codes du poste de travail NEOSIS : barre de menus, bandeau SDIS,
 tableau de bord temps réel, terminologie opérationnelle française (CIS, CSP, CTA-CODIS, FPT,
-VSAV, VSR, EPA, CCF, CCRM, SIN, P1/P2/P3…). Aucune mention SAMU n'est présente.
+VSAV, VSR, EPA, CCF, CCRM, SIN, P1/P2/P3…), avec les accès terrain **BIP BIRDY** (bips
+d'alerte individuels) et **Tablette Bilan NEOFIBI**. Aucune mention SAMU n'est présente.
 
 ## Sommaire
 
@@ -93,6 +94,9 @@ existante ou en créant la fiche. Les droits sont effectifs dès la connexion su
 - **Politique de mot de passe** paramétrable (longueur, majuscule, minuscule, chiffre, caractère
   spécial) et verrouillage temporaire après N échecs.
 - **Impression** des vues et documents (CRSS, consignes) via la feuille de style dédiée.
+- **Périphériques de terrain** : état du parc BIP BIRDY (porteurs, autotests, batterie) et des
+  tablettes bilan NEOFIBI (bilans du jour, synchronisation), accessibles depuis le bandeau et
+  le menu Sapeurs-Pompiers.
 
 ## Architecture
 

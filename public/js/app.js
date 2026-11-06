@@ -97,6 +97,10 @@ const MENU_ITEMS = {
     { icon: 'award', label: 'Aptitudes des personnels', hash: '#/aptitudes' },
     { sep: true },
     { icon: 'send', label: 'Message ANTARES', hash: '#/antares' },
+    { sep: true },
+    { group: 'Périphériques de terrain' },
+    { icon: 'radio', label: 'BIP BIRDY — alertes individuelles', action: 'birdy' },
+    { icon: 'mobile', label: 'Tablette Bilan NEOFIBI', action: 'neofibi' },
   ],
 };
 
@@ -466,6 +470,12 @@ function runAction(action) {
     case 'sessions':
       location.hash = '#/administration';
       break;
+    case 'birdy':
+      openBirdy();
+      break;
+    case 'neofibi':
+      openNeofibi();
+      break;
     case 'reseau':
       openReseau();
       break;
@@ -790,6 +800,85 @@ function openReseau() {
       ].map(([n, st]) => `<div class="row" style="justify-content:space-between;padding:8px 10px;border:1px solid var(--line-100);border-radius:5px">
         <span>${icon('radio')} ${esc(n)}</span><span class="badge badge-disponible">${esc(st)}</span></div>`).join('')}
     </div>`,
+    footer: '<button class="btn" data-close>Fermer</button>',
+  });
+}
+
+async function openBirdy() {
+  const cis = state.refs?.cis || [];
+  let personnels = [];
+  try {
+    const data = await api('/api/personnels');
+    personnels = data.items || [];
+  } catch {
+    personnels = [];
+  }
+  const rows = cis
+    .map((c, i) => {
+      const p = personnels.find((x) => x.cis === c.code);
+      const batterie = 68 + ((i * 9) % 31);
+      const test = `07:${String(12 + i * 2).padStart(2, '0')}`;
+      return `<tr>
+        <td class="cell-num">BIP-06${String(i + 1).padStart(3, '0')}</td>
+        <td>${p ? `${esc(p.grade)} ${esc(p.nom)} ${esc(p.prenom)}` : '—'}<div class="cell-sub">${esc(c.nom)}</div></td>
+        <td>${batterie} %</td>
+        <td class="cell-num">${test}</td>
+        <td><span class="badge badge-disponible">Testé</span></td>
+      </tr>`;
+    })
+    .join('');
+  openModal({
+    title: 'Réseau d’alerte BIP BIRDY',
+    subtitle: 'Bip individuels des personnels d’astreinte — état du parc et autotests',
+    iconName: 'radio',
+    size: 'modal-lg',
+    body: `<div class="msg-meta">
+        <span class="chip">${icon('radio')} ${cis.length} bip suivis</span>
+        <span class="chip">${icon('check')} Autotest quotidien 07:00</span>
+        <span class="chip">${icon('shield-check')} Diffusion chiffrée</span>
+      </div>
+      <div class="table-wrap"><table class="table table-compact">
+        <thead><tr><th>Bip</th><th>Porteur</th><th>Batterie</th><th>Dernier test</th><th>État</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table></div>
+      <div class="alert alert-info" style="margin-top:12px">${icon('info')}<span>Les bips sont affectés aux chefs de groupe d’astreinte. Un bip non testé sous 24 h est signalé au CTA.</span></div>`,
+    footer: '<button class="btn" data-close>Fermer</button>',
+  });
+}
+
+async function openNeofibi() {
+  const cis = state.refs?.cis || [];
+  const rows = cis
+    .map((c, i) => {
+      const sync = `17:${String(4 + i * 3).padStart(2, '0')}`;
+      const bilans = 2 + ((i * 5) % 7);
+      const etat = i === cis.length - 1
+        ? '<span class="badge badge-maintenance">Synchro en attente</span>'
+        : '<span class="badge badge-disponible">Synchronisée</span>';
+      return `<tr>
+        <td class="cell-num">NEOFIBI-${esc(c.code.slice(0, 3).toUpperCase())}-${String(i + 1).padStart(2, '0')}</td>
+        <td class="nowrap">${esc(c.nom)}<div class="cell-sub">${esc(c.commune)} — ${esc(c.code)}</div></td>
+        <td>${bilans} bilan(s)</td>
+        <td class="cell-num">${sync}</td>
+        <td>${etat}</td>
+      </tr>`;
+    })
+    .join('');
+  openModal({
+    title: 'Tablettes bilan NEOFIBI',
+    subtitle: 'Saisie du bilan sur le terrain et transmission au CODIS',
+    iconName: 'mobile',
+    size: 'modal-lg',
+    body: `<div class="msg-meta">
+        <span class="chip">${icon('mobile')} ${cis.length} tablettes · v4.2.1</span>
+        <span class="chip">${icon('refresh')} Synchro Wi-Fi / 4G</span>
+        <span class="chip">${icon('clipboard')} Bilans transmis au dossier SIN</span>
+      </div>
+      <div class="table-wrap"><table class="table table-compact">
+        <thead><tr><th>Tablette</th><th>Centre</th><th>Bilans du jour</th><th>Synchro</th><th>État</th></tr></thead>
+        <tbody>${rows}</tbody>
+      </table></div>
+      <div class="alert alert-info" style="margin-top:12px">${icon('info')}<span>Les bilans saisis sont horodatés et rattachés au dossier d’intervention ; ils alimentent le CRSS à la clôture.</span></div>`,
     footer: '<button class="btn" data-close>Fermer</button>',
   });
 }
